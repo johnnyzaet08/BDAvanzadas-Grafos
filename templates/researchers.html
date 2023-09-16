@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mantenimiento de Investigadores</title>
+</head>
+<body>
+    <h1>Mantenimiento de Investigadores</h1>
+
+    <h2>Agregar Investigador</h2>
+    <form action="/agregar_investigador" method="post">
+        <label for="nombre">Nombre completo:</label>
+        <input type="text" id="nombre" name="nombre" required><br>
+
+        <label for="titulo">Título académico:</label>
+        <input type="text" id="titulo" name="titulo" required><br>
+
+        <label for="institucion">Institución:</label>
+        <input type="text" id="institucion" name="institucion" required><br>
+
+        <label for="correo">Correo electrónico:</label>
+        <input type="email" id="correo" name="correo" required><br>
+
+        <input type="submit" value="Agregar">
+    </form>
+
+    <h2>Modificar Investigador</h2>
+    <form action="/modificar_investigador" method="post">
+        <label for="investigador_id">Selecciona un investigador:</label>
+        <select id="investigador_id" name="investigador_id" required>
+            <option value="1">Investigador 1</option>
+            <option value="2">Investigador 2</option>
+        </select><br>
+
+        <label for="nuevo_nombre">Nuevo nombre completo:</label>
+        <input type="text" id="nuevo_nombre" name="nuevo_nombre" required><br>
+
+        <label for="nuevo_titulo">Nuevo título académico:</label>
+        <input type="text" id="nuevo_titulo" name="nuevo_titulo" required><br>
+
+        <label for="nueva_institucion">Nueva institución:</label>
+        <input type="text" id="nueva_institucion" name="nueva_institucion" required><br>
+
+        <label for="nuevo_correo">Nuevo correo electrónico:</label>
+        <input type="email" id="nuevo_correo" name="nuevo_correo" required><br>
+
+        <input type="submit" value="Modificar">
+    </form>
+
+    <h2>Lista de Investigadores Registrados</h2>
+    <ul>
+        <li>Investigador 1 - Título 1 - Institución 1 - correo1@example.com</li>
+        <li>Investigador 2 - Título 2 - Institución 2 - correo2@example.com</li>
+    </ul>
+
+</body>
+</html>
