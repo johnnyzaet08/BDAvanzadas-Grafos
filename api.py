@@ -10,8 +10,10 @@ api = Flask(__name__)
 
 #Funciones de POBLACION DE LA BASE
 
+
+#Esta función crea un investigador en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo: http://127.0.0.1:5050/cargar_invest/juan carmona&phd&tec&juan@hola.com 
 @api.route('/cargar_invest/<string:nombre>&<string:titulo>&<string:institucion>&<string:email>', methods = ['GET', 'POST'])
-def Create_node(nombre, titulo, institucion, email):
+def crearInvest(nombre, titulo, institucion, email):
     query ="create (i:Investigador{Nombre:$nombre,Titulo:$titulo, Institucion:$institucion, Email:$email})"
     map_ ={"nombre":nombre, "titulo":titulo, "institucion":institucion, "email":email}
     try:
@@ -19,6 +21,18 @@ def Create_node(nombre, titulo, institucion, email):
         return ("Investigador creado con exito")
     except Exception as e:
         return(str(e))
+    
+#Esta función crea un proyecto en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo http://127.0.0.1:5050/cargar_proy/aguas Negras&2012&8&planetahoy
+@api.route('/cargar_proy/<string:titulo>&<int:anno>&<int:duracion>&<string:revista>', methods = ['GET', 'POST'])
+def crearProy(titulo, anno, duracion, revista):
+    query ="create (p:Proyecto{Titulo:$titulo,Anno:$anno, Duracion:$duracion, Revista:$revista})"
+    map_ ={"titulo":titulo, "anno":anno, "duracion":duracion, "revista":revista}
+    try:
+        session.run(query,map_)
+        return ("Proyecto creado con exito")
+    except Exception as e:
+        return(str(e))   
+
 if __name__ == "__main__":
     api.run(port=5050)
 """
