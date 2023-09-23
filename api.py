@@ -22,16 +22,46 @@ def crearInvest(nombre, titulo, institucion, email):
     except Exception as e:
         return(str(e))
     
-#Esta función crea un proyecto en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo http://127.0.0.1:5050/cargar_proy/aguas Negras&2012&8&planetahoy
-@api.route('/cargar_proy/<string:titulo>&<int:anno>&<int:duracion>&<string:revista>', methods = ['GET', 'POST'])
-def crearProy(titulo, anno, duracion, revista):
-    query ="create (p:Proyecto{Titulo:$titulo,Anno:$anno, Duracion:$duracion, Revista:$revista})"
-    map_ ={"titulo":titulo, "anno":anno, "duracion":duracion, "revista":revista}
+#Esta función crea un proyecto en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo http://127.0.0.1:5050/cargar_proy/aguas Negras&2012&8&biologia
+@api.route('/cargar_proy/<string:titulo>&<int:anno>&<int:duracion>&<string:area>', methods = ['GET', 'POST'])
+def crearProy(titulo, anno, duracion, area):
+    query ="create (p:Proyecto{Titulo:$titulo,Anno:$anno, Duracion:$duracion, Area:$revista})"
+    map_ ={"titulo":titulo, "anno":anno, "duracion":duracion, "area":area}
     try:
         session.run(query,map_)
         return ("Proyecto creado con exito")
     except Exception as e:
         return(str(e))   
+#Esta función crea un proyecto en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo http://127.0.0.1:5050/cargar_public/resultados de aguas&2012&ecorevista
+@api.route('/cargar_public/<string:titulo>&<int:anno>&<string:revista>', methods = ['GET', 'POST'])
+def crearPublic(titulo, anno, revista):
+    query ="create (pu:Publicacion{Titulo:$titulo,Anno:$anno, Revista:$revista})"
+    map_ ={"titulo":titulo, "anno":anno, "revista":revista}
+    try:
+        session.run(query,map_)
+        return ("Publicacion creado con exito")
+    except Exception as e:
+        return(str(e))
+#Esta función crea una relacion entre un investigador y un proyecto en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo http://127.0.0.1:5050/invest_proy/1&2 NOTA: los parametros son los id de cada uno
+@api.route('/invest_proy/<int:investigador>&<int:proyecto>', methods = ['GET', 'POST'])
+def crear_relacion_invest_proy(investigador, proyecto):
+    query ="Match(i:Investigador),(p:Proyecto) Where id(i)=$investigador and id(p)=$proyecto Create (i)-[r:participaEn]->(p)"
+    map_ ={"investigador":investigador,"proyecto":proyecto}
+    try:
+        session.run(query,map_)
+        return ("El investigador se ha relacionado al proyecto")
+    except Exception as e:
+        return(str(e))
+#Esta función crea una relacion entre un investigador y un proyecto en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo http://127.0.0.1:5050/invest_proy/1&2 NOTA: los parametros son los id de cada uno
+@api.route('/proy_pub/<int:proyecto>&<int:publicacion>', methods = ['GET', 'POST'])
+def crear_relacion_proy_publicacion(proyecto, publicacion):
+    query ="Match(pu:Publicacion),(p:Proyecto) Where id(pu)=$publicacion and id(p)=$proyecto Create (p)-[r:sePublicaEn]->(pu)"
+    map_ ={"publicacion":publicacion,"proyecto":proyecto}
+    try:
+        session.run(query,map_)
+        return ("El proyecto se ha relacionado a la publicacion")
+    except Exception as e:
+        return(str(e))
 
 if __name__ == "__main__":
     api.run(port=5050)
