@@ -31,7 +31,6 @@ def check_authentication():
         return True
     return False
 
-
 @app.route("/")
 def index():
     if not check_authentication():
