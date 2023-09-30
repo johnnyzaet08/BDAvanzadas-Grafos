@@ -5,7 +5,12 @@ socket.on('connect', () => {
 
 
 socket.on('researchersAPI', (message) => {
-    alert(message);
+    if(message == "Successful"){
+        document.getElementById("myForm").reset();
+        alert("Successful")
+    }else{
+        alert(message);
+    }
 });
 
 function addNewResearcher() {

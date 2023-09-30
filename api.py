@@ -1,4 +1,3 @@
-from flask import jsonify
 from flask_socketio import SocketIO
 from neo4j import GraphDatabase
 
@@ -29,9 +28,8 @@ def addResearcher(nombre, titulo, institucion, email):
         socketio.emit("researchersAPI",e)
 
 @socketio.on("researchersAPI/update")
-def addResearcher(id, nombre, titulo, institucion, email):
+def updateResearcher(id, nombre, titulo, institucion, email):
     query = ("MATCH (n) WHERE id(n) = $identi SET n.Nombre = $nombre, n.Titulo = $titulo, n.Institucion = $institucion, n.Email = $email RETURN n")
-    print(type(id))
     map_ = {"identi":int(id),"nombre": nombre, "titulo": titulo, "institucion": institucion, "email": email}
     try:
         with get_neo4j_session() as session:
@@ -41,52 +39,117 @@ def addResearcher(id, nombre, titulo, institucion, email):
         print(f"An error occurred: {e}")
         socketio.emit("researchersAPI",e)
 
-'''
-#Esta función crea un proyecto en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo http://127.0.0.1:5050/cargar_proy/aguas Negras&2012&8&biologia
-@api.route('/cargar_proy/<string:titulo>&<int:anno>&<int:duracion>&<string:area>', methods = ['GET', 'POST'])
-def crearProy(titulo, anno, duracion, area):
+@socketio.on("researchersAPI/get")
+def getResearcher():
+    query = ("match (i:Investigador) return i.Nombre")
+    try:
+        with get_neo4j_session() as session:
+            resultado=session.run(query)
+            data = resultado.data()
+            json_data = [dict(record) for record in data]
+            socketio.emit("researchersAPI/get", json_data)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        socketio.emit("researchersAPI",e)
+
+#Esta función crea un proyecto en la base de datos
+@socketio.on("projectsAPI/add")
+def addProject(titulo, anno, duracion, area):
     query ="create (p:Proyecto{Titulo:$titulo,Anno:$anno, Duracion:$duracion, Area:$area})"
     map_ ={"titulo":titulo, "anno":anno, "duracion":duracion, "area":area}
     try:
-        session.run(query,map_)
-        return ("Proyecto creado con exito")
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            socketio.emit("projectsAPI","Successful")
     except Exception as e:
-        return(str(e))   
+        socketio.emit("projectsAPI",e)
 
-#Esta función crea un proyecto en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo http://127.0.0.1:5050/cargar_public/resultados de aguas&2012&ecorevista
-@api.route('/cargar_public/<string:titulo>&<int:anno>&<string:revista>', methods = ['GET', 'POST'])
-def crearPublic(titulo, anno, revista):
+@socketio.on("projectsAPI/update")
+def updateProject(id, titulo, anno, duracion, area):
+    query = ("MATCH (n) WHERE id(n) = $identi SET n.Titulo = $titulo, n.Anno = $anno, n.Duracion = $duracion, n.Area = $area RETURN n")
+    map_ = {"identi":int(id),"titulo": titulo, "anno": anno, "duracion": duracion, "area": area}
+    try:
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            socketio.emit("projectsAPI","Successful")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        socketio.emit("projectsAPI",e)
+
+@socketio.on("projectsAPI/get")
+def getResearcher():
+    query = ("match (p:Proyecto) return p.Titulo")
+    try:
+        with get_neo4j_session() as session:
+            resultado = session.run(query)
+            data = resultado.data()
+            json_data = [dict(record) for record in data]
+            socketio.emit("projectsAPI/get", json_data)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        socketio.emit("projectsAPI",e)
+
+#Esta función crea una publicacion en la base de datos
+@socketio.on("publicationsAPI/add")
+def addPublications(titulo, anno, revista):
     query ="create (pu:Publicacion{Titulo:$titulo,Anno:$anno, Revista:$revista})"
     map_ ={"titulo":titulo, "anno":anno, "revista":revista}
     try:
-        session.run(query,map_)
-        return ("Publicacion creado con exito")
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            socketio.emit("publicationsAPI","Successful")
     except Exception as e:
-        return(str(e))
+        socketio.emit("publicationsAPI",e)
 
-#Esta función crea una relacion entre un investigador y un proyecto en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo http://127.0.0.1:5050/invest_proy/1&2 NOTA: los parametros son los id de cada uno
-@api.route('/invest_proy/<int:investigador>&<int:proyecto>', methods = ['GET', 'POST'])
-def crear_relacion_invest_proy(investigador, proyecto):
-    query ="Match(i:Investigador),(p:Proyecto) Where id(i)=$investigador and id(p)=$proyecto Create (i)-[r:participaEn]->(p)"
-    map_ ={"investigador":investigador,"proyecto":proyecto}
+@socketio.on("publicationsAPI/update")
+def updatePublications(id, titulo, anno, revista):
+    query = ("MATCH (n) WHERE id(n) = $identi SET n.Titulo = $titulo, n.Anno = $anno, n.Revista = $revista RETURN n")
+    map_ = {"identi":int(id),"titulo": titulo, "anno": anno, "revista": revista}
     try:
-        session.run(query,map_)
-        return ("El investigador se ha relacionado al proyecto")
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            socketio.emit("publicationsAPI","Successful")
     except Exception as e:
-        return(str(e))
+        print(f"An error occurred: {e}")
+        socketio.emit("publicationsAPI",e)
 
-#Esta función crea una relacion entre un investigador y un proyecto en la base de datos: debe ser llamado desde frontend de la siguiente manera: Ejemplo http://127.0.0.1:5050/proy_pub/1&2 NOTA: los parametros son los id de cada uno
-@api.route('/proy_pub/<int:proyecto>&<int:publicacion>', methods = ['GET', 'POST'])
-def crear_relacion_proy_publicacion(proyecto, publicacion):
-    query ="Match(pu:Publicacion),(p:Proyecto) Where id(pu)=$publicacion and id(p)=$proyecto Create (p)-[r:sePublicaEn]->(pu)"
-    map_ ={"publicacion":publicacion,"proyecto":proyecto}
+@socketio.on("publicationsAPI/get")
+def getPublications():
+    query = ("match (pu:Publicacion) return pu.Titulo")
     try:
-        session.run(query,map_)
-        return ("El proyecto se ha relacionado a la publicacion")
+        with get_neo4j_session() as session:
+            resultado = session.run(query)
+            data = resultado.data()
+            json_data = [dict(record) for record in data]
+            socketio.emit("publicationsAPI/get", json_data)
     except Exception as e:
-        return(str(e))
-    
+        print(f"An error occurred: {e}")
+        socketio.emit("publicationsAPI",e)
 
+#Esta función crea una relacion entre un investigador y un proyecto en la base de datos
+@socketio.on("associate_researcherAPI/add")
+def addAssociateResearcher(researcher, project):
+    query ="Match(i:Investigador),(p:Proyecto) Where i.Nombre=$investigador and p.Titulo=$proyecto Create (i)-[r:participaEn]->(p)"
+    map_ ={"investigador":researcher,"proyecto":project}
+    try:
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            socketio.emit("associate_researcherAPI","Successful")
+    except Exception as e:
+        socketio.emit("associate_researcherAPI",e)
+
+#Esta función crea una relacion entre un investigador y un proyecto en la base de datos
+@socketio.on("associate_articleAPI/add")
+def addAssociateArticle(publication, project):
+    query ="Match(pu:Publicacion),(p:Proyecto) Where pu.Titulo=$publicacion and p.Titulo=$proyecto Create (p)-[r:sePublicaEn]->(pu)"
+    map_ ={"publicacion":publication,"proyecto":project}
+    try:
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            socketio.emit("associate_articleAPI","Successful")
+    except Exception as e:
+        socketio.emit("associate_articleAPI",e)
+'''
 #############################CONSULTAS#########################################
 #Esta función es solo una consulta, al ingresar el query se obtiene las 5  areas de interés con más proyectos y la cantidad de proyectos inscritos en este.
 #Retorna en formato json

@@ -230,7 +230,6 @@ def search_researcher():
     
     if request.method == "POST":
         None
-        
     
     if loadData:
         return render_template("search_researcher.html")
@@ -264,7 +263,6 @@ def search_publications():
 def search_by_area():
     if not check_authentication():
         return redirect(url_for("login"))
-    
     
     if loadData:
         return render_template("search_by_area.html")
