@@ -2,40 +2,68 @@
 
 {% block content %}
 
-<!DOCTYPE html>
-<html>
+    <!DOCTYPE html>
+    <html>
 
-<head>
-   <title>Mantenimiento de Investigadores</title>
-   <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
-   <script src="{{ url_for('static', filename='javascript/form.js') }}"></script>
-</head>
+    <head>
+        <title>Search for a Project</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+        <script src="{{ url_for('static', filename='javascript/search_project.js') }}"></script>
+    </head>
 
-<body>
+    <body>
 
-   <section class="get-in-touch">
-      <h1 class="title">Add / Update Research</h1>
-      <form class="contact-form row">
-         <div class="form-field x-50">
-            <input id="name" class="input-text js-input" type="text" required>
-            <label class="label" for="name">Name</label>
-         </div>
-         <div class="form-field col x-50">
-            <input id="email" class="input-text js-input" type="email" required>
-            <label class="label" for="email">E-mail</label>
-         </div>
-         <div class="form-field col x-100">
-            <input id="message" class="input-text js-input" type="text" required>
-            <label class="label" for="message">Message</label>
-         </div>
-         <div class="form-field col x-100 align-center">
-            <input class="submit-btn" type="submit" value="Submit">
-         </div>
-      </form>
-   </section>
+    <section class="get-in-touch">
+        <h1 class="title">Search for a Project</h1>
+        <form class="contact-form row">
+            <div class="form-field col x-50">
+                <input id="name" class="input-text js-input" type="text" required>
+                <label class="label" for="name">Project Name</label>
+            </div>
+        </form>
+        <table id="projects">
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>Title</th>
+                <th>Knowledge Area</th>
+                <th>Duration</th>
+                <th>Start Year</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <h4 id="researcher_projects" ></h4>
+        <table id="researchers" style="display: none">
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>Name</th>
+                <th>Degree</th>
+                <th>Institution</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <h4 id="publication_projects"></h4>
+        <table id="publications" style="display: none">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Journal</th>
+                <th>Publication Year</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </section>
 
-</body>
+    </body>
 
-</html>
+    </html>
 
 {% endblock %}

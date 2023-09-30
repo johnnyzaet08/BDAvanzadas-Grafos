@@ -229,6 +229,28 @@ def findResearcherByName(name):
         print(f"An error occurred: {e}")
         socketio.emit("findResearcherByNameAPI/get", e)
 
+
+@socketio.on("findProjectByNameAPI")
+def findProjectByName(name):
+    query = ("MATCH (p:Proyecto) WHERE p.titulo_proyecto =~ '(?i).*{name}.*'RETURN p.idPry as ".format(name=name) +
+             "idPry,p.titulo_proyecto as "
+             "titulo_proyecto , p.area_conocimiento as area_conocimiento, p.anno_inicio as anno_inicio, p.duracion_meses as duracion_meses, p.area_conocimiento "
+             "AS proyecto, [(i:Investigador)-[:participaEn]->(p) | {nombre_completo: i.nombre_completo, "
+             "titulo_academico: i.titulo_academico, institucion: i.institucion, email: i.email, id:i.id}] AS "
+             "investigadores,"
+             "[(pub:Publicacion)<-[:sePublicaEn]-(p) | {titulo_publicacion: pub.titulo_publicacion, anno_publicacion: "
+             "pub.anno_publicacion, nombre_revista: pub.nombre_revista}] AS publicaciones;")
+    print(query)
+    try:
+        with get_neo4j_session() as session:
+            resultado = session.run(query)
+            data = resultado.data()
+            json_data = [dict(record) for record in data]
+            socketio.emit("findProjectByNameAPI/get", json_data)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        socketio.emit("findProjectByNameAPI/get", e)
+
 '''
 #############################CONSULTAS#########################################
 #Esta función es solo una consulta, al ingresar el query se obtiene las 5  areas de interés con más proyectos y la cantidad de proyectos inscritos en este.

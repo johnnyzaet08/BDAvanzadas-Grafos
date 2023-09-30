@@ -86,24 +86,22 @@ MATCH (p:Proyecto)
 RETURN p.area_conocimiento;
 
 //Busqueda de investigador por nombre, retorna su info y los proyectos donde trabaja
-MATCH (i:Investigador {nombre_completo: 'Ana Rodríguez'})-[:participaEn]->(p:Proyecto)
+MATCH (i:Investigador {nombre_completo: 'Nombre'})-[:participaEn]->(p:Proyecto)
 RETURN i.id, i.titulo_academico, i.institucion, i.email, COLLECT(p) AS proyectos;
 
 //Busqueda por nombre por parecidos
 MATCH (i:Investigador)
-WHERE i.nombre_completo =~ '(?i).*Ca.*'
+WHERE i.nombre_completo =~ '(?i).*Nombre.*'
 OPTIONAL MATCH (i)-[:participaEn]->(p:Proyecto)
 RETURN i.id as id, i.nombre_completo AS nombre_completo, i.titulo_academico AS titulo_academico, i.institucion AS institucion, i.email as email, COLLECT(p) AS proyectos;
 
 
 //Busqueda de proyectos a partir de nombre. Retorna info del proyecto, de los investigadores y de las publicaciones asociadas
-MATCH (p:Proyecto {titulo_proyecto: 'Titulo Proyecto'})
-RETURN p.idPry, p.anno_inicio, p.duracion_meses, p.area_conocimiento AS proyecto,
+MATCH (p:Proyecto)
+WHERE p.titulo_proyecto =~ '(?i).*Nombre_Proyecto.*'
+RETURN p.idPry as idPry,p.titulo_proyecto as titulo_proyecto , p.anno_inicio as anno_inicio, p.duracion_meses as duracion_meses, p.area_conocimiento AS proyecto,
        [(i:Investigador)-[:participaEn]->(p) | {nombre_completo: i.nombre_completo, titulo_academico: i.titulo_academico, institucion: i.institucion, email: i.email}] AS investigadores,
        [(pub:Publicacion)<-[:sePublicaEn]-(p) | {titulo_publicacion: pub.titulo_publicacion, anno_publicacion: pub.anno_publicacion, nombre_revista: pub.nombre_revista}] AS publicaciones;
-
-
-
 
 //______Asociaciones_______
 //Asociar investigador a proyecto por ID
