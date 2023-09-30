@@ -4,81 +4,59 @@
 
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Mantenimiento de Investigadores</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+   <title>Mantenimiento de Investigadores</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+   <script src="{{ url_for('static', filename='javascript/researchers.js') }}"></script>
 </head>
+
 <body>
-    <div class="form-style form-style-five">
-        <form method="POST"
-        <div class="row">
-           <div class="col-lg">
-              <div class="form-input mt-5">
-                 <form action="#">
-                    <label>Enter userid</label>
-                    <div class="input-items default">
-                       <input type="text" placeholder="Default" />
-                       <i class="lni lni-user"></i>
-                    </div>
-                 </form>
-              </div>
-              <!-- form input -->
-           </div>
-           <div class="col-lg">
-              <div class="form-input mt-5">
-                 <form action="#">
-                    <label>Enter userid</label>
-                    <div class="input-items active">
-                       <input type="text" placeholder="Active" />
-                       <i class="lni lni-user"></i>
-                    </div>
-                 </form>
-              </div>
-              <!-- form input -->
-           </div>
-           <div class="col-lg">
-              <div class="form-input mt-5 form-group">
-                 <form action="#" data-toggle="validator">
-                    <label>Enter userid</label>
-                    <div class="input-items error">
-                       <input type="text" placeholder="Error!" data-error="Assistive text" required />
-                       <i class="lni lni-user"></i>
-                    </div>
-                    <div class="help-block with-errors"></div>
-                 </form>
-              </div>
-              <!-- form input -->
-           </div>
-           <div class="col-lg">
-              <div class="form-input mt-5">
-                 <form action="#">
-                    <label>Enter userid</label>
-                    <div class="input-items success">
-                       <input type="text" placeholder="Success" />
-                       <i class="lni lni-user"></i>
-                    </div>
-                 </form>
-              </div>
-              <!-- form input -->
-           </div>
-           <div class="col-lg">
-              <div class="form-input mt-5">
-                 <form action="#">
-                    <label>Enter userid</label>
-                    <div class="input-items disabled">
-                       <input type="text" placeholder="Disabled" disabled />
-                       <i class="lni lni-user"></i>
-                    </div>
-                 </form>
-              </div>
-              <!-- form input -->
-           </div>
+
+   <section class="get-in-touch">
+      <h1 class="title">Add / Update Researcher</h1>
+      <form  id="myForm" class="contact-form row">
+         <div class="form-field col x-50">
+            <input id="id" class="input-text js-input" type="number" required>
+            <label class="label" for="id">Node ID</label>
+         </div>
+         <div class="form-field col x-100">
+            <input id="name" class="input-text js-input" type="text" required>
+            <label class="label" for="name">Complete Name</label>
+         </div>
+         <div class="form-field col x-50">
+            <select id="degree" class="input-select js-select" required>
+                <option value="Diplomado">Diplomado</option>
+                <option value="Tecnico">Técnico</option>
+                <option value="Bachillerato">Bachillerato</option>
+                <option value="Licenciatura">Licenciatura</option>
+                <option value="Maestria">Maestría</option>
+                <option value="Especialidad">Especialidad</option>
+                <option value="Doctorado">Doctorado</option>
+            </select>
+            <label class="label" for="degree">Academic Degree</label>
         </div>
-        <!-- row -->
-     </div>
-     <!-- form-style -->
+         <div class="form-field col x-100">
+            <input id="email" class="input-text js-input" type="email" required>
+            <label class="label" for="email">E-mail</label>
+         </div>
+         <div class="form-field col x-100">
+            <input id="institution" class="input-text js-input" type="text" required>
+            <label class="label" for="institution">Institution Works</label>
+         </div>
+
+         <div class="form-field col x-100 align-center">
+            <label id="add-btn" class="submit-btn">ADD</label>
+         </div>
+
+         <div class="form-field col x-100 align-center">
+            <label id="update-btn" class="submit-btn">UPDATE</label>
+         </div>
+      </form>
+   </section>
 
 </body>
+
 </html>
 
 {% endblock %}
