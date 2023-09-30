@@ -86,8 +86,15 @@ MATCH (p:Proyecto)
 RETURN p.area_conocimiento;
 
 //Busqueda de investigador por nombre, retorna su info y los proyectos donde trabaja
-MATCH (i:Investigador {nombre_completo: 'Nombre Investigador'})-[:participaEn]->(p:Proyecto)
+MATCH (i:Investigador {nombre_completo: 'Ana Rodríguez'})-[:participaEn]->(p:Proyecto)
 RETURN i.id, i.titulo_academico, i.institucion, i.email, COLLECT(p) AS proyectos;
+
+//Busqueda por nombre por parecidos
+MATCH (i:Investigador)
+WHERE i.nombre_completo =~ '(?i).*Ca.*'
+OPTIONAL MATCH (i)-[:participaEn]->(p:Proyecto)
+RETURN i.id as id, i.nombre_completo AS nombre_completo, i.titulo_academico AS titulo_academico, i.institucion AS institucion, i.email as email, COLLECT(p) AS proyectos;
+
 
 //Busqueda de proyectos a partir de nombre. Retorna info del proyecto, de los investigadores y de las publicaciones asociadas
 MATCH (p:Proyecto {titulo_proyecto: 'Titulo Proyecto'})

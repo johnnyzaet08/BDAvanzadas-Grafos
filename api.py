@@ -212,6 +212,23 @@ def topResearchers():
         print(f"An error occurred: {e}")
         socketio.emit("topResearchersAPI/get", e)
 
+@socketio.on("findResearcherByNameAPI")
+def findResearcherByName(name):
+    query = ("MATCH (i:Investigador) WHERE i.nombre_completo =~ '(?i).*{name}.*' ".format(name=name) +
+             "OPTIONAL MATCH (i)-[:participaEn]->(p:Proyecto)"
+             "RETURN i.id as id, i.nombre_completo AS nombre_completo, i.titulo_academico AS titulo_academico, "
+             "i.institucion AS institucion, i.email as email, COLLECT(p) AS proyectos;")
+    print(query)
+    try:
+        with get_neo4j_session() as session:
+            resultado = session.run(query)
+            data = resultado.data()
+            json_data = [dict(record) for record in data]
+            socketio.emit("findResearcherByNameAPI/get", json_data)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        socketio.emit("findResearcherByNameAPI/get", e)
+
 '''
 #############################CONSULTAS#########################################
 #Esta función es solo una consulta, al ingresar el query se obtiene las 5  areas de interés con más proyectos y la cantidad de proyectos inscritos en este.
