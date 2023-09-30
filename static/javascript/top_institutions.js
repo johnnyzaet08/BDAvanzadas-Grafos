@@ -15,9 +15,9 @@ socket.on("topInstitutionsAPI/get", (data) => {
         institution.textContent = element.institucion;
         fila.appendChild(institution);
 
-        const proyectsQuantity = document.createElement("td");
-        proyectsQuantity.textContent = element.cantidad_proyectos
-        fila.appendChild(proyectsQuantity);
+        const projectsQuantity = document.createElement("td");
+        projectsQuantity.textContent = element.cantidad_proyectos
+        fila.appendChild(projectsQuantity);
 
         tbody.appendChild(fila);
     });
