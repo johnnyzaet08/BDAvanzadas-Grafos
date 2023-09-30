@@ -1,0 +1,84 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mantenimiento de Investigadores</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+</head>
+<body>
+    <div class="form-style form-style-five">
+        <form method="POST"
+        <div class="row">
+           <div class="col-lg">
+              <div class="form-input mt-5">
+                 <form action="#">
+                    <label>Enter userid</label>
+                    <div class="input-items default">
+                       <input type="text" placeholder="Default" />
+                       <i class="lni lni-user"></i>
+                    </div>
+                 </form>
+              </div>
+              <!-- form input -->
+           </div>
+           <div class="col-lg">
+              <div class="form-input mt-5">
+                 <form action="#">
+                    <label>Enter userid</label>
+                    <div class="input-items active">
+                       <input type="text" placeholder="Active" />
+                       <i class="lni lni-user"></i>
+                    </div>
+                 </form>
+              </div>
+              <!-- form input -->
+           </div>
+           <div class="col-lg">
+              <div class="form-input mt-5 form-group">
+                 <form action="#" data-toggle="validator">
+                    <label>Enter userid</label>
+                    <div class="input-items error">
+                       <input type="text" placeholder="Error!" data-error="Assistive text" required />
+                       <i class="lni lni-user"></i>
+                    </div>
+                    <div class="help-block with-errors"></div>
+                 </form>
+              </div>
+              <!-- form input -->
+           </div>
+           <div class="col-lg">
+              <div class="form-input mt-5">
+                 <form action="#">
+                    <label>Enter userid</label>
+                    <div class="input-items success">
+                       <input type="text" placeholder="Success" />
+                       <i class="lni lni-user"></i>
+                    </div>
+                 </form>
+              </div>
+              <!-- form input -->
+           </div>
+           <div class="col-lg">
+              <div class="form-input mt-5">
+                 <form action="#">
+                    <label>Enter userid</label>
+                    <div class="input-items disabled">
+                       <input type="text" placeholder="Disabled" disabled />
+                       <i class="lni lni-user"></i>
+                    </div>
+                 </form>
+              </div>
+              <!-- form input -->
+           </div>
+        </div>
+        <!-- row -->
+     </div>
+     <!-- form-style -->
+
+</body>
+</html>
+
+{% endblock %}
