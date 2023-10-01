@@ -161,11 +161,12 @@ RETURN proyecto.anno_inicio AS anno_inicio,
 
 
 // Busqueda de publicacion por titulo 
-MATCH (publicacion:Publicacion {titulo_publicacion: 'Clima en Marte: Investigación en Planetas'})
+MATCH (publicacion:Publicacion)
+WHERE publicacion.titulo_publicacion =~ '(?i).*Titulo Publicacion*'  // (?i) para hacer coincidencia insensible a mayúsculas/minúsculas
 OPTIONAL MATCH (publicacion)<-[:sePublicaEn]-(proyecto:Proyecto)
 RETURN publicacion.anno_publicacion AS anno_publicacion,
        publicacion.nombre_revista AS nombre_revista,
-       proyecto.titulo_proyecto AS titulo_proyecto
+       proyecto.titulo_proyecto AS titulo_proyecto;
 
 // Busqueda area de conocimiento
 MATCH (proyecto:Proyecto)
