@@ -301,7 +301,7 @@ def findProjectByKnowledge():
 
 @socketio.on("findColleagueAPI")
 def findColleague():
-    query = ("MATCH (investigador:Investigador) MATCH (investigador)-[:participaEn]->(proyecto:Proyecto)<-["
+    query = ("MATCH (investigador:Investigador) OPTIONAL MATCH (investigador)-[:participaEn]->(proyecto:Proyecto)<-["
              ":participaEn]-(colega:Investigador) RETURN investigador.id AS id, investigador.nombre_completo AS "
              "nombre_completo, investigador.titulo_academico AS titulo_academico, investigador.institucion AS "
              "institucion, investigador.email AS email, COLLECT(DISTINCT colega.nombre_completo) AS "
