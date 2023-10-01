@@ -6,7 +6,7 @@ from api import *
 app = Flask(__name__)
 app.static_folder = "static"
 app.static_url_path = "/static"
-app.run(port=8080)
+app.run(port=5000)
 app.config["SECRET_KEY"] = "BDA-2023"
 app.config['VALID_PASSWORD'] = 'asd123'
 app.config['VALID_USERNAME'] = 'asd123'
@@ -78,11 +78,11 @@ def data_upload():
 
 @socketio.on("loadResearchers")
 def loadResearchers_func(data):
-    # Subir todo el csv
-    lector = csv.reader(data)
-    for fila in lector:
-        id,nombre,titulo,institucion,email = fila
-        print(id,nombre,titulo,institucion,email)
+    decoded_text = data.decode('utf-8')
+    lines = decoded_text.split('\r\n')
+    print(lines)
+    for line in lines:
+        print(line)
     # Si esta correcto, tirar load a True
     session["loadResearchers"] = True
     check_uploads()
@@ -302,4 +302,5 @@ def search_colleagues():
 
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(app)
+    
