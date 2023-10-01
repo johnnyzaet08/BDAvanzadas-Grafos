@@ -203,6 +203,7 @@ def topInstitutions():
         print(f"An error occurred: {e}")
         socketio.emit("topInstitutionsAPI/get", e)
 
+
 @socketio.on("topResearchersAPI")
 def topResearchers():
     query = ("MATCH (i:Investigador)-[:participaEn]->(p:Proyecto) WITH i, i.institucion AS institucion, COUNT(p) AS "
@@ -218,6 +219,7 @@ def topResearchers():
     except Exception as e:
         print(f"An error occurred: {e}")
         socketio.emit("topResearchersAPI/get", e)
+
 
 @socketio.on("findResearcherByNameAPI")
 def findResearcherByName(name):
@@ -257,6 +259,27 @@ def findProjectByName(name):
     except Exception as e:
         print(f"An error occurred: {e}")
         socketio.emit("findProjectByNameAPI/get", e)
+
+
+@socketio.on("findPublicationByNameAPI")
+def findPublicationByName(name):
+    query = (
+                "MATCH (publicacion:Publicacion) WHERE publicacion.titulo_publicacion =~ '(?i).*{name}.*' OPTIONAL MATCH (".format(
+                    name=name) +
+                "publicacion)<-[:sePublicaEn]-(proyecto:Proyecto) RETURN publicacion.anno_publicacion AS "
+                "anno_publicacion, publicacion.titulo_publicacion AS titulo_publicacion, publicacion.nombre_revista AS "
+                "nombre_revista, publicacion.idPub AS idPub, proyecto.titulo_proyecto AS titulo_proyecto;")
+    print(query)
+    try:
+        with get_neo4j_session() as session:
+            resultado = session.run(query)
+            data = resultado.data()
+            json_data = [dict(record) for record in data]
+            socketio.emit("findPublicationByNameAPI/get", json_data)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        socketio.emit("findPublicationByNameAPI/get", e)
+
 
 '''
 #############################CONSULTAS#########################################
