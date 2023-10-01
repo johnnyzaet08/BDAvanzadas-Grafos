@@ -77,11 +77,11 @@ def data_upload():
 
 @socketio.on("loadResearchers")
 def loadResearchers_func(data):
-    # Subir todo el csv
-    lector = csv.reader(data)
-    for fila in lector:
-        id,nombre,titulo,institucion,email = fila
-        print(id,nombre,titulo,institucion,email)
+    decoded_text = data.decode('utf-8')
+    lines = decoded_text.split('\r\n')
+    print(lines)
+    for line in lines:
+        print(line)
     # Si esta correcto, tirar load a True
     session["loadResearchers"] = True
     check_uploads()
@@ -301,4 +301,5 @@ def search_colleagues():
 
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(app)
+    

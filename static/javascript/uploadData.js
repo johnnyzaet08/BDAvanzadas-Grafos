@@ -21,8 +21,8 @@ socket.on('StateDOORS', (doors) => {
 });
 
 function loadResearchers_Func() {
-    file =document.getElementById("load_researchers").file[0]
-    socket.emit('loadResearchers', file);
+    const files = document.getElementById("load_Researchers").files;
+    socket.emit('loadResearchers', files[0]);
 }
 
 function loadProjects_Func() {
