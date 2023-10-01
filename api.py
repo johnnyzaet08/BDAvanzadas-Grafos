@@ -280,6 +280,23 @@ def findPublicationByName(name):
         print(f"An error occurred: {e}")
         socketio.emit("findPublicationByNameAPI/get", e)
 
+@socketio.on("findKnowledgeAPI")
+def findProjectByKnowledge():
+    query = ("MATCH (proyecto:Proyecto) WITH proyecto MATCH (publicacion:Publicacion)<-[:sePublicaEn]-(proyecto) "
+             "RETURN DISTINCT proyecto.area_conocimiento AS area_conocimiento, COLLECT(DISTINCT "
+             "proyecto.titulo_proyecto) AS TItulos_de_Proyectos, COLLECT(DISTINCT publicacion.titulo_publicacion) AS "
+             "Titulos_de_Publicaciones")
+    print(query)
+    try:
+        with get_neo4j_session() as session:
+            resultado = session.run(query)
+            data = resultado.data()
+            json_data = [dict(record) for record in data]
+            socketio.emit("findKnowledgeAPI/get", json_data)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        socketio.emit("findKnowledgeAPI/get", e)
+
 
 '''
 #############################CONSULTAS#########################################

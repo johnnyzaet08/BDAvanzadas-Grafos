@@ -6,7 +6,6 @@ from api import *
 app = Flask(__name__)
 app.static_folder = "static"
 app.static_url_path = "/static"
-app.run(port=8080)
 app.config["SECRET_KEY"] = "BDA-2023"
 app.config['VALID_PASSWORD'] = 'asd123'
 app.config['VALID_USERNAME'] = 'asd123'
