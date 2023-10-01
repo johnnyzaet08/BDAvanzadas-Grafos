@@ -17,18 +17,19 @@ socket.on('publicationsAPI/get', (data) => {
     const select = document.getElementById('publications');
     data.forEach(element => {
         const optionElement = document.createElement('option');
-        optionElement.value = element["pu.Titulo"];
-        optionElement.text = element["pu.Titulo"];
+        optionElement.value = element["pu.titulo_publicacion"];
+        optionElement.text = element["pu.titulo_publicacion"];
         select.appendChild(optionElement);
     });
 });
 
 socket.on('projectsAPI/get', (data) => {
     const select = document.getElementById('projects');
+    console.log(data);
     data.forEach(element => {
         const optionElement = document.createElement('option');
-        optionElement.value = element["p.Titulo"];
-        optionElement.text = element["p.Titulo"];
+        optionElement.value = element["p.titulo_proyecto"];
+        optionElement.text = element["p.titulo_proyecto"];
         select.appendChild(optionElement);
     });
 });
