@@ -28,7 +28,7 @@ socket.on("findProjectByNameAPI/get", (data) => {
         const id = document.createElement("td");
         id.textContent = element.idPry;
         fila.appendChild(id);
-        
+
         const title = document.createElement("td");
         title.textContent = element.titulo_proyecto;
         fila.appendChild(title);

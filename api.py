@@ -20,7 +20,9 @@ def get_neo4j_session():
 # Esta función crea un investigador en la base de datos: debe ser llamado desde frontend
 @socketio.on("researchersAPI/add")
 def addResearcher(nombre, titulo, institucion, email):
-    query = "CREATE (i:Investigador{Nombre:$nombre,Titulo:$titulo, Institucion:$institucion, Email:$email})"
+    query = ("MATCH (i:Investigador) WITH COALESCE(MAX(i.id), 0) AS max_id CREATE (newInvestigator:Investigador { "
+             "id: max_id + 1, nombre_completo: $nombre, titulo_academico: $titulo, institucion: "
+             "$institucion, email: $email}) RETURN newInvestigator;")
     map_ = {"nombre": nombre, "titulo": titulo, "institucion": institucion, "email": email}
     try:
         with get_neo4j_session() as session:
@@ -33,7 +35,8 @@ def addResearcher(nombre, titulo, institucion, email):
 @socketio.on("researchersAPI/update")
 def updateResearcher(id, nombre, titulo, institucion, email):
     query = (
-        "MATCH (n) WHERE id(n) = $identi SET n.Nombre = $nombre, n.Titulo = $titulo, n.Institucion = $institucion, n.Email = $email RETURN n")
+        "MATCH (n:Investigador) WHERE n.id = identi SET n.nombre_completo = $nombre, n.titulo_academico = $titulo, "
+        "n.institucion = $titulo, n.email = $email RETURN n")
     map_ = {"identi": int(id), "nombre": nombre, "titulo": titulo, "institucion": institucion, "email": email}
     try:
         with get_neo4j_session() as session:
@@ -46,7 +49,7 @@ def updateResearcher(id, nombre, titulo, institucion, email):
 
 @socketio.on("researchersAPI/get")
 def getResearcher():
-    query = ("match (i:Investigador) return i.Nombre")
+    query = ("match (i:Investigador) return i.nombre_completo")
     try:
         with get_neo4j_session() as session:
             resultado = session.run(query)
@@ -61,7 +64,9 @@ def getResearcher():
 # Esta función crea un proyecto en la base de datos
 @socketio.on("projectsAPI/add")
 def addProject(titulo, anno, duracion, area):
-    query = "create (p:Proyecto{Titulo:$titulo,Anno:$anno, Duracion:$duracion, Area:$area})"
+    query = ("MATCH (p:Proyecto) WITH COALESCE(MAX(p.idPry), 0) AS max_id CREATE (p:Proyecto { idPry: max_id + 1, "
+             "titulo_proyecto: $titulo, anno_inicio: $anno, duracion_meses: $duracion, area_conocimiento: $area}) "
+             "RETURN p;")
     map_ = {"titulo": titulo, "anno": anno, "duracion": duracion, "area": area}
     try:
         with get_neo4j_session() as session:
@@ -74,7 +79,7 @@ def addProject(titulo, anno, duracion, area):
 @socketio.on("projectsAPI/update")
 def updateProject(id, titulo, anno, duracion, area):
     query = (
-        "MATCH (n) WHERE id(n) = $identi SET n.Titulo = $titulo, n.Anno = $anno, n.Duracion = $duracion, n.Area = $area RETURN n")
+        "MATCH (n:Proyecto) WHERE n.idPry = $identi SET n.titulo_proyecto = $titulo, n.anno_inicio = $anno, n.duracion_meses = $duracion, n.area_conocimiento = $area RETURN n")
     map_ = {"identi": int(id), "titulo": titulo, "anno": anno, "duracion": duracion, "area": area}
     try:
         with get_neo4j_session() as session:
@@ -87,7 +92,7 @@ def updateProject(id, titulo, anno, duracion, area):
 
 @socketio.on("projectsAPI/get")
 def getResearcher():
-    query = ("match (p:Proyecto) return p.Titulo")
+    query = ("match (p:Proyecto) return p.titulo_proyecto")
     try:
         with get_neo4j_session() as session:
             resultado = session.run(query)
@@ -102,7 +107,8 @@ def getResearcher():
 # Esta función crea una publicacion en la base de datos
 @socketio.on("publicationsAPI/add")
 def addPublications(titulo, anno, revista):
-    query = "create (pu:Publicacion{Titulo:$titulo,Anno:$anno, Revista:$revista})"
+    query = ("MATCH (pu:Publicacion) WITH COALESCE(MAX(pu.idPub), 0) AS max_id CREATE (pu:Publicacion { idPub: max_id "
+             "+ 1, titulo_publicacion: $titulo, anno_publicacion: $anno, nombre_revista: $revista}) RETURN pu;")
     map_ = {"titulo": titulo, "anno": anno, "revista": revista}
     try:
         with get_neo4j_session() as session:
@@ -114,7 +120,8 @@ def addPublications(titulo, anno, revista):
 
 @socketio.on("publicationsAPI/update")
 def updatePublications(id, titulo, anno, revista):
-    query = ("MATCH (n) WHERE id(n) = $identi SET n.Titulo = $titulo, n.Anno = $anno, n.Revista = $revista RETURN n")
+    query = ("MATCH (n:Publicacion) WHERE n.idPub = $identi SET n.titulo_publicacion = $titulo, n.anno_publicacion = "
+             "$anno, n.nombre_revista = $revista RETURN n")
     map_ = {"identi": int(id), "titulo": titulo, "anno": anno, "revista": revista}
     try:
         with get_neo4j_session() as session:
@@ -127,7 +134,7 @@ def updatePublications(id, titulo, anno, revista):
 
 @socketio.on("publicationsAPI/get")
 def getPublications():
-    query = ("match (pu:Publicacion) return pu.Titulo")
+    query = ("match (pu:Publicacion) return pu.titulo_publicacion")
     try:
         with get_neo4j_session() as session:
             resultado = session.run(query)
@@ -142,7 +149,7 @@ def getPublications():
 # Esta función crea una relacion entre un investigador y un proyecto en la base de datos
 @socketio.on("associate_researcherAPI/add")
 def addAssociateResearcher(researcher, project):
-    query = "Match(i:Investigador),(p:Proyecto) Where i.Nombre=$investigador and p.Titulo=$proyecto Create (i)-[r:participaEn]->(p)"
+    query = "Match(i:Investigador),(p:Proyecto) Where i.nombre_completo=$investigador and p.titulo_proyecto=$proyecto Create (i)-[r:participaEn]->(p)"
     map_ = {"investigador": researcher, "proyecto": project}
     try:
         with get_neo4j_session() as session:
@@ -155,7 +162,7 @@ def addAssociateResearcher(researcher, project):
 # Esta función crea una relacion entre un investigador y un proyecto en la base de datos
 @socketio.on("associate_articleAPI/add")
 def addAssociateArticle(publication, project):
-    query = "Match(pu:Publicacion),(p:Proyecto) Where pu.Titulo=$publicacion and p.Titulo=$proyecto Create (p)-[r:sePublicaEn]->(pu)"
+    query = "Match(pu:Publicacion),(p:Proyecto) Where pu.titulo_publicacion=$publicacion and p.titulo_proyecto=$proyecto Create (p)-[r:sePublicaEn]->(pu)"
     map_ = {"publicacion": publication, "proyecto": project}
     try:
         with get_neo4j_session() as session:
