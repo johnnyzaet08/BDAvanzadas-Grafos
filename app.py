@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_cors import CORS
-
+import csv
 from api import *
 
 app = Flask(__name__)
 app.static_folder = "static"
 app.static_url_path = "/static"
-
+app.run(port=8080)
 app.config["SECRET_KEY"] = "BDA-2023"
 app.config['VALID_PASSWORD'] = 'asd123'
 app.config['VALID_USERNAME'] = 'asd123'
@@ -79,6 +79,10 @@ def data_upload():
 @socketio.on("loadResearchers")
 def loadResearchers_func(data):
     # Subir todo el csv
+    lector = csv.reader(data)
+    for fila in lector:
+        id,nombre,titulo,institucion,email = fila
+        print(id,nombre,titulo,institucion,email)
     # Si esta correcto, tirar load a True
     session["loadResearchers"] = True
     check_uploads()
@@ -87,6 +91,10 @@ def loadResearchers_func(data):
 @socketio.on("loadProjects")
 def loadProjects_func(data):
     # Subir todo el csv
+    lector = csv.reader(data)
+    for fila in lector:
+        id,titulo_proyecto,anno_inicio,duracion_meses,area_conocimiento = fila
+        print(id,titulo_proyecto,anno_inicio,duracion_meses,area_conocimiento)
     # Si esta correcto, tirar load a True
     session["loadProjects"] = True
     check_uploads()
@@ -95,6 +103,10 @@ def loadProjects_func(data):
 @socketio.on("loadPublications")
 def loadPublications_func(data):
     # Subir todo el csv
+    lector = csv.reader(data)
+    for fila in lector:
+        id_pub,titulo_publicacion,anno_publicacion,nombre_revista = fila
+        print(id_pub,titulo_publicacion,anno_publicacion,nombre_revista)
     # Si esta correcto, tirar load a True
     session["loadPublications"] = True
     check_uploads()
@@ -103,6 +115,10 @@ def loadPublications_func(data):
 @socketio.on("loadResearchersProj")
 def loadResearchersProj_func(data):
     # Subir todo el csv
+    lector = csv.reader(data)
+    for fila in lector:
+        idInv,idProy= fila
+        print(idInv,idProy)
     # Si esta correcto, tirar load a True
     session["loadResearchersProj"] = True
     check_uploads()
@@ -111,6 +127,10 @@ def loadResearchersProj_func(data):
 @socketio.on("loadPublicationsProj")
 def loadPublicationsProj_func(data):
     # Subir todo el csv
+    lector = csv.reader(data)
+    for fila in lector:
+        idProyecto,idArt= fila
+        print(idProyecto,idArt)
     # Si esta correcto, tirar load a True
     session["loadPublicationsProj"] = True
     check_uploads()

@@ -21,23 +21,28 @@ socket.on('StateDOORS', (doors) => {
 });
 
 function loadResearchers_Func() {
-    socket.emit('loadResearchers', 'successful');
+    file =document.getElementById("load_researchers").file[0]
+    socket.emit('loadResearchers', file);
 }
 
 function loadProjects_Func() {
-    socket.emit('loadProjects', 'successful');
+    file =document.getElementById("load_proj").file[0]
+    socket.emit('loadProjects',file);
 }
 
 function loadPublications_Func() {
-    socket.emit('loadPublications', 'successful');
+    file =document.getElementById("load_pub").file[0]
+    socket.emit('loadPublications', file);
 }
 
 function loadResearchersProj_Func() {
-    socket.emit('loadResearchersProj', 'successful');
+    file =document.getElementById("load_researchers-proj").file[0]
+    socket.emit('loadResearchersProj', file);
 }
 
 function loadPublicationsProj_Func() {
-    socket.emit('loadPublicationsProj', 'successful');
+    file =document.getElementById("load_pub-proj").file[0]
+    socket.emit('loadPublicationsProj', file);
 }
 
 window.onload = function(){
