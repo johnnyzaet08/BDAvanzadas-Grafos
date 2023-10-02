@@ -42,7 +42,7 @@ def addResearcherCSV(id, nombre, titulo, institucion, email):
     query = ("CREATE (newInvestigator:Investigador { "
              "id: $id, nombre_completo: $nombre, titulo_academico: $titulo, institucion: "
              "$institucion, email: $email})")
-    map_ = {"id":id, "nombre": nombre, "titulo": titulo, "institucion": institucion, "email": email}
+    map_ = {"id":int(id), "nombre": nombre, "titulo": titulo, "institucion": institucion, "email": email}
     try:
         with get_neo4j_session() as session:
             session.run(query, map_)
@@ -55,8 +55,8 @@ def addResearcherCSV(id, nombre, titulo, institucion, email):
 @socketio.on("researchersAPI/update")
 def updateResearcher(id, nombre, titulo, institucion, email):
     query = (
-        "MATCH (n:Investigador) WHERE n.id = identi SET n.nombre_completo = $nombre, n.titulo_academico = $titulo, "
-        "n.institucion = $titulo, n.email = $email RETURN n")
+        "MATCH (n:Investigador) WHERE n.id = $identi SET n.nombre_completo = $nombre, n.titulo_academico = $titulo, "
+        "n.institucion = $institucion, n.email = $email RETURN n")
     map_ = {"identi": int(id), "nombre": nombre, "titulo": titulo, "institucion": institucion, "email": email}
     try:
         with get_neo4j_session() as session:
@@ -98,7 +98,7 @@ def addProject(titulo, anno, duracion, area):
 def addProjectCSV(id, titulo, anno, duracion, area):
     query = ("CREATE (p:Proyecto { idPry: $id, "
              "titulo_proyecto: $titulo, anno_inicio: $anno, duracion_meses: $duracion, area_conocimiento: $area}) ")
-    map_ = {"id":id, "titulo": titulo, "anno": anno, "duracion": duracion, "area": area}
+    map_ = {"id":int(id), "titulo": titulo, "anno": anno, "duracion": duracion, "area": area}
     try:
         with get_neo4j_session() as session:
             session.run(query, map_)
@@ -148,7 +148,7 @@ def addPublications(titulo, anno, revista):
 
 def addPublicationsCSV(id, titulo, anno, revista):
     query = ("CREATE (pu:Publicacion { idPub: $id, titulo_publicacion: $titulo, anno_publicacion: $anno, nombre_revista: $revista})")
-    map_ = {"id":id, "titulo": titulo, "anno": anno, "revista": revista}
+    map_ = {"id":int(id), "titulo": titulo, "anno": anno, "revista": revista}
     try:
         with get_neo4j_session() as session:
             session.run(query, map_)
@@ -199,7 +199,7 @@ def addAssociateResearcher(researcher, project):
 
 def addAssociateResearcherCSV(researcher, project):
     query = "Match(i:Investigador),(p:Proyecto) Where i.id=$investigador and p.idPry=$proyecto Create (i)-[r:participaEn]->(p)"
-    map_ = {"investigador": researcher, "proyecto": project}
+    map_ = {"investigador": int(researcher), "proyecto": int(project)}
     try:
         with get_neo4j_session() as session:
             session.run(query, map_)
@@ -222,7 +222,7 @@ def addAssociateArticle(publication, project):
 
 def addAssociateArticleCSV(project, publication):
     query = "Match(pu:Publicacion),(p:Proyecto) Where pu.idPub=$publicacion and p.idPry=$proyecto Create (p)-[r:sePublicaEn]->(pu)"
-    map_ = {"publicacion": publication, "proyecto": project}
+    map_ = {"publicacion": int(publication), "proyecto": int(project)}
     try:
         with get_neo4j_session() as session:
             session.run(query, map_)
