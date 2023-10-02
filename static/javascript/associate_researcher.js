@@ -40,20 +40,10 @@ function addNewResearcher() {
     socket.emit("associate_researcherAPI/add", researcher, project);
 };
 
-function updateResearcher() {
-    let id = document.getElementById("id").value;
-    if(id == null || id == ""){
-        return alert("Ingrese el ID");
-    }
-    let researcher = document.getElementById("researchers").value;
-    let project = document.getElementById("projects").value;
-    //socket.emit("associate_researcherAPI/update", id, researcher, project);
-};
 
 window.onload = function() {
     var inputs = document.getElementsByClassName('js-input');
     var add_btn = document.getElementById("add-btn");
-    var update_btn = document.getElementById("update-btn");
 
     socket.emit("researchersAPI/get")
     socket.emit("projectsAPI/get")
@@ -63,7 +53,6 @@ window.onload = function() {
     };
 
     add_btn.addEventListener("click", addNewResearcher);
-    update_btn.addEventListener("click", updateResearcher);
 
 }
 

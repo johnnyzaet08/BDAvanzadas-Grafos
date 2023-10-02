@@ -48,7 +48,7 @@ def start():
 def home():
     if not check_authentication():
         return redirect(url_for("login"))
-    return render_template("home.html")
+    return redirect(url_for("data_upload"))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
