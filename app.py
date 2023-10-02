@@ -12,7 +12,12 @@ app.config['VALID_USERNAME'] = 'asd123'
 CORS(app)
 socketio.init_app(app)
 
-loadData = True
+loadData = False
+loadResearchers = False
+loadProjects = False
+loadPublications = False
+loadResearchersProj = False
+loadPublicationsProj = False
 
 # Authentication check function
 def check_authentication():
@@ -21,24 +26,18 @@ def check_authentication():
     return False
 
 def check_uploads():
-    data = ["loadResearchers", "loadProjects", "loadPublications", "loadResearchersProj", "loadPublicationsProj"]
-    checkCreate = True
+    data = [loadResearchers, loadProjects, loadPublications, loadResearchersProj, loadPublicationsProj]
     checkData = True
-    for i in data:
-        if i not in session:
-            checkCreate = False
-            break
 
-    if checkCreate:
-        for i in data:
-            if not session[i]:
-                checkData = False
-                break
+    for i in data:
+        if not i:
+            checkData = False
+            break
         
-        if checkData:
-            global loadData
-            loadData = True
-            socketio.emit('uploadMessage','Successful Uploading All Data')
+    if checkData:
+        global loadData
+        loadData = True
+        socketio.emit('uploadMessage','Successful Uploading All Data')
 
 @app.route("/")
 def start():
@@ -77,6 +76,7 @@ def data_upload():
 
 @socketio.on("loadResearchers")
 def loadResearchers_func(data):
+    global loadResearchers
     decoded_text = data.decode('utf-8')
     lines = decoded_text.split('\r\n')
     lines = lines[1:]
@@ -84,12 +84,13 @@ def loadResearchers_func(data):
         datos = line.split(',')
         if not addResearcherCSV(datos[0],datos[1],datos[2],datos[3],datos[4]):
             socketio.emit('uploadMessage','Error uploading Researchers')
-    session["loadResearchers"] = True
+    loadResearchers = True
     check_uploads()
     socketio.emit('uploadMessage','Successful uploading Researchers')
 
 @socketio.on("loadProjects")
 def loadProjects_func(data):
+    global loadProjects
     decoded_text = data.decode('utf-8')
     lines = decoded_text.split('\r\n')
     lines = lines[1:]
@@ -97,12 +98,13 @@ def loadProjects_func(data):
         datos = line.split(',')
         if not addProjectCSV(datos[0],datos[1],datos[2],datos[3],datos[4]):
             socketio.emit('uploadMessage','Error uploading Projects')
-    session["loadProjects"] = True
+    loadProjects = True
     check_uploads()
     socketio.emit('uploadMessage','Successful uploading Projects')
 
 @socketio.on("loadPublications")
 def loadPublications_func(data):
+    global loadPublications
     decoded_text = data.decode('utf-8')
     lines = decoded_text.split('\r\n')
     lines = lines[1:]
@@ -110,12 +112,13 @@ def loadPublications_func(data):
         datos = line.split(',')
         if not addPublicationsCSV(datos[0],datos[1],datos[2],datos[3]):
             socketio.emit('uploadMessage','Error uploading Publications')
-    session["loadPublications"] = True
+    loadPublications = True
     check_uploads()
     socketio.emit('uploadMessage','Successful uploading Publications')
 
 @socketio.on("loadResearchersProj")
 def loadResearchersProj_func(data):
+    global loadResearchersProj
     decoded_text = data.decode('utf-8')
     lines = decoded_text.split('\r\n')
     lines = lines[1:]
@@ -123,12 +126,13 @@ def loadResearchersProj_func(data):
         datos = line.split(',')
         if not addAssociateResearcherCSV(datos[0],datos[1]):
             socketio.emit('uploadMessage','Error uploading Researchers-Proj')
-    session["loadResearchersProj"] = True
+    loadResearchersProj = True
     check_uploads()
     socketio.emit('uploadMessage','Successful uploading Researchers-Proj')
 
 @socketio.on("loadPublicationsProj")
 def loadPublicationsProj_func(data):
+    global loadPublicationsProj
     decoded_text = data.decode('utf-8')
     lines = decoded_text.split('\r\n')
     lines = lines[1:]
@@ -136,7 +140,7 @@ def loadPublicationsProj_func(data):
         datos = line.split(',')
         if not addAssociateArticleCSV(datos[0],datos[1]):
             socketio.emit('uploadMessage','Error uploading Publications-Proj')
-    session["loadPublicationsProj"] = True
+    loadPublicationsProj = True
     check_uploads()
     socketio.emit('uploadMessage','Successful uploading Publications-Proj')
 
