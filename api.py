@@ -7,12 +7,19 @@ NEO4J_URI = 'bolt://localhost:7687'
 NEO4J_USER = 'neo4j'
 NEO4J_PASSWORD = '12345678'
 
+singleton = False
+base = None
 
 def get_neo4j_session():
-    return GraphDatabase.driver(
-        NEO4J_URI,
-        auth=(NEO4J_USER, NEO4J_PASSWORD)
-    ).session()
+    global base
+    if not singleton:
+        base = GraphDatabase.driver(
+            NEO4J_URI,
+            auth=(NEO4J_USER, NEO4J_PASSWORD)
+        ).session()
+        return base
+    else:
+        return base
 
 
 ################################################ ADD / UPDATE ###########################################
@@ -30,6 +37,19 @@ def addResearcher(nombre, titulo, institucion, email):
             socketio.emit("researchersAPI", "Successful")
     except Exception as e:
         socketio.emit("researchersAPI", e)
+
+def addResearcherCSV(id, nombre, titulo, institucion, email):
+    query = ("CREATE (newInvestigator:Investigador { "
+             "id: $id, nombre_completo: $nombre, titulo_academico: $titulo, institucion: "
+             "$institucion, email: $email})")
+    map_ = {"id":id, "nombre": nombre, "titulo": titulo, "institucion": institucion, "email": email}
+    try:
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            return True
+    except Exception as e:
+        socketio.emit("researchersAPI", e)
+        return False
 
 
 @socketio.on("researchersAPI/update")
@@ -75,6 +95,16 @@ def addProject(titulo, anno, duracion, area):
     except Exception as e:
         socketio.emit("projectsAPI", e)
 
+def addProjectCSV(id, titulo, anno, duracion, area):
+    query = ("CREATE (p:Proyecto { idPry: $id, "
+             "titulo_proyecto: $titulo, anno_inicio: $anno, duracion_meses: $duracion, area_conocimiento: $area}) ")
+    map_ = {"id":id, "titulo": titulo, "anno": anno, "duracion": duracion, "area": area}
+    try:
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            return True
+    except Exception as e:
+        return False
 
 @socketio.on("projectsAPI/update")
 def updateProject(id, titulo, anno, duracion, area):
@@ -88,7 +118,6 @@ def updateProject(id, titulo, anno, duracion, area):
     except Exception as e:
         print(f"An error occurred: {e}")
         socketio.emit("projectsAPI", e)
-
 
 @socketio.on("projectsAPI/get")
 def getResearcher():
@@ -116,6 +145,16 @@ def addPublications(titulo, anno, revista):
             socketio.emit("publicationsAPI", "Successful")
     except Exception as e:
         socketio.emit("publicationsAPI", e)
+
+def addPublicationsCSV(id, titulo, anno, revista):
+    query = ("CREATE (pu:Publicacion { idPub: $id, titulo_publicacion: $titulo, anno_publicacion: $anno, nombre_revista: $revista})")
+    map_ = {"id":id, "titulo": titulo, "anno": anno, "revista": revista}
+    try:
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            return True
+    except Exception as e:
+        return False
 
 
 @socketio.on("publicationsAPI/update")
@@ -158,6 +197,16 @@ def addAssociateResearcher(researcher, project):
     except Exception as e:
         socketio.emit("associate_researcherAPI", e)
 
+def addAssociateResearcherCSV(researcher, project):
+    query = "Match(i:Investigador),(p:Proyecto) Where i.id=$investigador and p.idPry=$proyecto Create (i)-[r:participaEn]->(p)"
+    map_ = {"investigador": researcher, "proyecto": project}
+    try:
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            return True
+    except Exception as e:
+        return False
+
 
 # Esta función crea una relacion entre un investigador y un proyecto en la base de datos
 @socketio.on("associate_articleAPI/add")
@@ -171,7 +220,18 @@ def addAssociateArticle(publication, project):
     except Exception as e:
         socketio.emit("associate_articleAPI", e)
 
+def addAssociateArticleCSV(project, publication):
+    query = "Match(pu:Publicacion),(p:Proyecto) Where pu.idPub=$publicacion and p.idPry=$proyecto Create (p)-[r:sePublicaEn]->(pu)"
+    map_ = {"publicacion": publication, "proyecto": project}
+    try:
+        with get_neo4j_session() as session:
+            session.run(query, map_)
+            return True
+    except Exception as e:
+        return False
 
+
+############################################### CONSULTAS #################################################
 @socketio.on("topKnowledgeAPI")
 def topKnowledgeAreas():
     query = ("MATCH (p:Proyecto) WITH p.area_conocimiento AS area_conocimiento, COUNT(p) AS cantidad_proyectos RETURN "
@@ -264,11 +324,11 @@ def findProjectByName(name):
 @socketio.on("findPublicationByNameAPI")
 def findPublicationByName(name):
     query = (
-                "MATCH (publicacion:Publicacion) WHERE publicacion.titulo_publicacion =~ '(?i).*{name}.*' OPTIONAL MATCH (".format(
-                    name=name) +
-                "publicacion)<-[:sePublicaEn]-(proyecto:Proyecto) RETURN publicacion.anno_publicacion AS "
-                "anno_publicacion, publicacion.titulo_publicacion AS titulo_publicacion, publicacion.nombre_revista AS "
-                "nombre_revista, publicacion.idPub AS idPub, proyecto.titulo_proyecto AS titulo_proyecto;")
+            "MATCH (publicacion:Publicacion) WHERE publicacion.titulo_publicacion =~ '(?i).*{name}.*' OPTIONAL MATCH (".format(
+                name=name) +
+            "publicacion)<-[:sePublicaEn]-(proyecto:Proyecto) RETURN publicacion.anno_publicacion AS "
+            "anno_publicacion, publicacion.titulo_publicacion AS titulo_publicacion, publicacion.nombre_revista AS "
+            "nombre_revista, publicacion.idPub AS idPub, proyecto.titulo_proyecto AS titulo_proyecto;")
     print(query)
     try:
         with get_neo4j_session() as session:
@@ -279,6 +339,43 @@ def findPublicationByName(name):
     except Exception as e:
         print(f"An error occurred: {e}")
         socketio.emit("findPublicationByNameAPI/get", e)
+
+
+@socketio.on("findKnowledgeAPI")
+def findProjectByKnowledge():
+    query = ("MATCH (proyecto:Proyecto) WITH proyecto MATCH (publicacion:Publicacion)<-[:sePublicaEn]-(proyecto) "
+             "RETURN DISTINCT proyecto.area_conocimiento AS area_conocimiento, COLLECT(DISTINCT "
+             "proyecto.titulo_proyecto) AS TItulos_de_Proyectos, COLLECT(DISTINCT publicacion.titulo_publicacion) AS "
+             "Titulos_de_Publicaciones ORDER BY proyecto.area_conocimiento;")
+    print(query)
+    try:
+        with get_neo4j_session() as session:
+            resultado = session.run(query)
+            data = resultado.data()
+            json_data = [dict(record) for record in data]
+            socketio.emit("findKnowledgeAPI/get", json_data)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        socketio.emit("findKnowledgeAPI/get", e)
+
+
+@socketio.on("findColleagueAPI")
+def findColleague():
+    query = ("MATCH (investigador:Investigador) OPTIONAL MATCH (investigador)-[:participaEn]->(proyecto:Proyecto)<-["
+             ":participaEn]-(colega:Investigador) RETURN investigador.id AS id, investigador.nombre_completo AS "
+             "nombre_completo, investigador.titulo_academico AS titulo_academico, investigador.institucion AS "
+             "institucion, investigador.email AS email, COLLECT(DISTINCT colega.nombre_completo) AS "
+             "colegas_de_proyectos ORDER BY investigador.nombre_completo;")
+    print(query)
+    try:
+        with get_neo4j_session() as session:
+            resultado = session.run(query)
+            data = resultado.data()
+            json_data = [dict(record) for record in data]
+            socketio.emit("findColleagueAPI/get", json_data)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        socketio.emit("findColleagueAPI/get", e)
 
 
 '''

@@ -1,12 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_cors import CORS
-
 from api import *
 
 app = Flask(__name__)
 app.static_folder = "static"
 app.static_url_path = "/static"
-
 app.config["SECRET_KEY"] = "BDA-2023"
 app.config['VALID_PASSWORD'] = 'asd123'
 app.config['VALID_USERNAME'] = 'asd123'
@@ -40,6 +38,7 @@ def check_uploads():
         if checkData:
             global loadData
             loadData = True
+            socketio.emit('uploadMessage','Successful Uploading All Data')
 
 @app.route("/")
 def start():
@@ -78,43 +77,68 @@ def data_upload():
 
 @socketio.on("loadResearchers")
 def loadResearchers_func(data):
-    # Subir todo el csv
-    # Si esta correcto, tirar load a True
+    decoded_text = data.decode('utf-8')
+    lines = decoded_text.split('\r\n')
+    lines = lines[1:]
+    for line in lines:
+        datos = line.split(',')
+        if not addResearcherCSV(datos[0],datos[1],datos[2],datos[3],datos[4]):
+            socketio.emit('uploadMessage','Error uploading Researchers')
     session["loadResearchers"] = True
     check_uploads()
-    return None
+    socketio.emit('uploadMessage','Successful uploading Researchers')
 
 @socketio.on("loadProjects")
 def loadProjects_func(data):
-    # Subir todo el csv
-    # Si esta correcto, tirar load a True
+    decoded_text = data.decode('utf-8')
+    lines = decoded_text.split('\r\n')
+    lines = lines[1:]
+    for line in lines:
+        datos = line.split(',')
+        if not addProjectCSV(datos[0],datos[1],datos[2],datos[3],datos[4]):
+            socketio.emit('uploadMessage','Error uploading Projects')
     session["loadProjects"] = True
     check_uploads()
-    return None
+    socketio.emit('uploadMessage','Successful uploading Projects')
 
 @socketio.on("loadPublications")
 def loadPublications_func(data):
-    # Subir todo el csv
-    # Si esta correcto, tirar load a True
+    decoded_text = data.decode('utf-8')
+    lines = decoded_text.split('\r\n')
+    lines = lines[1:]
+    for line in lines:
+        datos = line.split(',')
+        if not addPublicationsCSV(datos[0],datos[1],datos[2],datos[3]):
+            socketio.emit('uploadMessage','Error uploading Publications')
     session["loadPublications"] = True
     check_uploads()
-    return None
+    socketio.emit('uploadMessage','Successful uploading Publications')
 
 @socketio.on("loadResearchersProj")
 def loadResearchersProj_func(data):
-    # Subir todo el csv
-    # Si esta correcto, tirar load a True
+    decoded_text = data.decode('utf-8')
+    lines = decoded_text.split('\r\n')
+    lines = lines[1:]
+    for line in lines:
+        datos = line.split(',')
+        if not addAssociateResearcherCSV(datos[0],datos[1]):
+            socketio.emit('uploadMessage','Error uploading Researchers-Proj')
     session["loadResearchersProj"] = True
     check_uploads()
-    return None
+    socketio.emit('uploadMessage','Successful uploading Researchers-Proj')
 
 @socketio.on("loadPublicationsProj")
 def loadPublicationsProj_func(data):
-    # Subir todo el csv
-    # Si esta correcto, tirar load a True
+    decoded_text = data.decode('utf-8')
+    lines = decoded_text.split('\r\n')
+    lines = lines[1:]
+    for line in lines:
+        datos = line.split(',')
+        if not addAssociateArticleCSV(datos[0],datos[1]):
+            socketio.emit('uploadMessage','Error uploading Publications-Proj')
     session["loadPublicationsProj"] = True
     check_uploads()
-    return None
+    socketio.emit('uploadMessage','Successful uploading Publications-Proj')
 
 
 @app.route("/researchers", methods=["GET"])
@@ -283,3 +307,4 @@ def search_colleagues():
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
+    
