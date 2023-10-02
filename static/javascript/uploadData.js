@@ -10,38 +10,32 @@ socket.on('connect', () => {
     console.log('Connected to server');
 });
 
-socket.on('StateDOORS', (doors) => {
-    doors.forEach(door => {
-      if(door.value){
-        document.getElementById(door.target).classList.add('active')
-      }else{
-        document.getElementById(door.target).classList.remove('active')
-      }
-    });
-});
+socket.on('uploadMessage', (message) => {
+    alert(message);
+})
 
 function loadResearchers_Func() {
-    const files = document.getElementById("load_Researchers").files;
-    socket.emit('loadResearchers', files[0]);
+    file = document.getElementById("load_researchers").files[0];
+    socket.emit('loadResearchers', file);
 }
 
 function loadProjects_Func() {
-    file =document.getElementById("load_proj").file[0]
+    file = document.getElementById("load_proj").files[0]
     socket.emit('loadProjects',file);
 }
 
 function loadPublications_Func() {
-    file =document.getElementById("load_pub").file[0]
+    file = document.getElementById("load_pub").files[0]
     socket.emit('loadPublications', file);
 }
 
 function loadResearchersProj_Func() {
-    file =document.getElementById("load_researchers-proj").file[0]
+    file = document.getElementById("load_researchers-proj").files[0]
     socket.emit('loadResearchersProj', file);
 }
 
 function loadPublicationsProj_Func() {
-    file =document.getElementById("load_pub-proj").file[0]
+    file = document.getElementById("load_pub-proj").files[0]
     socket.emit('loadPublicationsProj', file);
 }
 
