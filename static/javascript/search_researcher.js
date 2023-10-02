@@ -57,6 +57,10 @@ getProjects = function() {
     projects.forEach(element => {
         const fila = document.createElement("tr");
 
+        const id = document.createElement("td");
+        id.textContent = element.idPry;
+        fila.appendChild(id);
+
         const title = document.createElement("td");
         title.textContent = element.titulo_proyecto;
         fila.appendChild(title);
@@ -72,10 +76,6 @@ getProjects = function() {
         const start_year = document.createElement("td");
         start_year.textContent = element.anno_inicio;
         fila.appendChild(start_year);
-
-        const id = document.createElement("td");
-        id.textContent = element.idPry;
-        fila.appendChild(id);
 
         tbody.appendChild(fila);
     });
